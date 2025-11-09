@@ -103,13 +103,27 @@ py -m venv .venv
 
 # Windows
 .venv\Scripts\activate
+
+```
+3. Install dependencies
+
+#### Install a Package
+
+```
+py -m pip install requests
 ```
 
-3. Install dependencies
+```
+
 
 ```powershell
 py -m pip install --upgrade pip
 py -m pip install jupyterlab pandas matplotlib seaborn scikit-learn imbalanced-learn xgboost pyarrow
+```
+
+#### List Installed Packages
+
+```py -m pip list
 ```
 
 4. Save environment
@@ -118,12 +132,15 @@ py -m pip install jupyterlab pandas matplotlib seaborn scikit-learn imbalanced-l
 py -m pip freeze > requirements.txt
 ```
 
-5. Recommended .gitignore
+5. Create or update the .gitignore file in the root project folder and add the following entries:
+
+```Recommended .gitignore
 .venv/
 __pycache__/
 .ipynb_checkpoints/
 *.csv
 *.log
+```
 
 ## Tools and Libraries
 
@@ -215,7 +232,7 @@ Length of stay is typically short (3–8 days), but longer stays are more common
 
 Medication count tends to be higher for those later readmitted.
 
-Categorical Features
+#### Categorical Features
 
 diabetes and hypertension show substantial prevalence, consistent with chronic disease populations.
 
@@ -228,7 +245,7 @@ Target Distribution
 Overall readmission rate is low (~12.25%), confirming class imbalance.
 
 
-This motivates:
+#### This motivates:
 
 Use of SMOTE (Synthetic Minority Oversampling Technique) on the training data.
 
@@ -278,7 +295,7 @@ Aggregate them (e.g., weighted or equal-weight sum).
 Rescale the result to a 0–100 range.
 
 
-Create categorical bands:
+#### Create categorical bands:
 
 
 Low complexity
@@ -305,7 +322,7 @@ As a clinical segment variable: complexity_category to compare readmission rates
 2. Additional Engineered Features (Conceptual)
 
 
-Parse blood_pressure into:
+#### Parse blood_pressure into:
 
 
 systolic_bp
@@ -386,7 +403,7 @@ ROC AUC
 Precision–Recall AUC
 
 
-Hyperparameter Tuning
+## Hyperparameter Tuning
 
 
 RandomizedSearchCV on Random Forest with parameters such as:
@@ -440,7 +457,7 @@ Prioritizes recall so that most high-risk patients are identified.
 
 Provides a data-driven method to flag patients needing closer follow-up after discharge.
 
-Repository Structure
+### Repository Structure
 
 ```
 Hospital-Readmission-Prediction/
