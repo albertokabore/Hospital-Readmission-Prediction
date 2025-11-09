@@ -25,11 +25,6 @@ The goal is to help healthcare systems **identify high-risk patients at discharg
 - **GitHub repository:**
   https://github.com/albertokabore/Hospital-Readmission-Prediction
 
-- **Jupyter notebook (main analysis):**
-  https://github.com/albertokabore/Hospital-Readmission-Prediction/blob/main/notebooks/Readmission_Project.ipynb
-
-- **Dataset (project copy):**
-  https://github.com/albertokabore/Hospital-Readmission-Prediction/blob/main/data/Dataset_Hospital_readmissions_30k.csv
 
 - **Original Kaggle source:**
   https://www.kaggle.com/datasets/siddharth0935/hospital-readmission-predictionsynthetic-dataset
