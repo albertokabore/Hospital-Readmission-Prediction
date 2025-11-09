@@ -96,25 +96,32 @@ This metric strategy reflects a clinical perspective: it is generally safer to *
 
 ### 1. Clone the repository
 
-```bash
+```Powershell
 git clone https://github.com/albertokabore/Hospital-Readmission-Prediction
 cd Hospital-Readmission-Prediction
+```
 
 2. Create and activate virtual environment
+
+```powershell
 py -m venv .venv
 
 # Windows
 .venv\Scripts\activate
-
-# macOS / Linux (if desired)
-# source .venv/bin/activate
+```
 
 3. Install dependencies
+
+```powershell
 py -m pip install --upgrade pip
 py -m pip install jupyterlab pandas matplotlib seaborn scikit-learn imbalanced-learn xgboost pyarrow
+```
 
 4. Save environment
+
+```Powershell
 py -m pip freeze > requirements.txt
+```
 
 5. Recommended .gitignore
 .venv/
@@ -123,7 +130,7 @@ __pycache__/
 *.csv
 *.log
 
-Tools and Libraries
+## Tools and Libraries
 
 Python, Jupyter Notebook, VS Code
 
@@ -143,9 +150,9 @@ Data Cleaning and Curation
 
 The dataset is relatively clean and synthetic, so the cleaning steps focused on validation and light curation rather than heavy correction.
 
-Main Steps
+## Main Steps
 
-Column standardization
+### Column standardization
 
 Trimmed column names (removed leading/trailing spaces).
 
@@ -170,7 +177,7 @@ df["readmitted"] = df["readmitted_30_days"].map({"Yes": 1, "No": 0})
 
 readmitted becomes the dependent variable for supervised learning.
 
-Type validation
+## Type validation
 
 Numeric features:
 age, cholesterol, bmi, medication_count, length_of_stay, readmitted
@@ -180,9 +187,9 @@ gender, blood_pressure, diabetes, hypertension, discharge_destination, readmitte
 
 The data curation step confirms that the dataset is consistent, complete, and ready for EDA, feature engineering, and modeling without the need for imputation.
 
-Exploratory Data Analysis (EDA)
+## Exploratory Data Analysis (EDA)
 
-EDA is performed in:
+### EDA is performed in:
 notebooks/Readmission_Project.ipynb
 
 Key tools: histograms, boxplots, correlation heatmaps, categorical count plots.
@@ -203,7 +210,7 @@ length_of_stay
 
 readmitted (target)
 
-Insights:
+## Insights:
 
 Age and cholesterol show mild right skew.
 
@@ -225,157 +232,222 @@ Target Distribution
 
 Overall readmission rate is low (~12.25%), confirming class imbalance.
 
+
 This motivates:
 
 Use of SMOTE (Synthetic Minority Oversampling Technique) on the training data.
 
 Emphasis on recall and PR AUC in evaluation.
 
-Feature Engineering
+## Feature Engineering
+
 
 Feature engineering focuses on encoding clinical burden and improving signal for machine learning models.
+
 
 1. Clinical Complexity Score
 
 A clinical_complexity_score is defined to summarize multiple quantitative indicators of patient burden. It combines:
 
+
 age
+
 
 cholesterol
 
+
 bmi
+
 
 medication_count
 
+
 length_of_stay
+
 
 Encoded comorbidities: diabetes (Yes/No), hypertension (Yes/No)
 
+
 Core steps (high-level):
+
 
 Convert comorbidity flags (diabetes, hypertension) to 0/1.
 
+
 Standardize all numeric burden indicators (z-scores).
+
 
 Aggregate them (e.g., weighted or equal-weight sum).
 
+
 Rescale the result to a 0–100 range.
+
 
 Create categorical bands:
 
+
 Low complexity
+
 
 Medium complexity
 
+
 High complexity
+
 
 Very High complexity
 
+
 This score is used both:
+
 
 As a numeric predictor: clinical_complexity_score, and
 
+
 As a clinical segment variable: complexity_category to compare readmission rates across burden strata.
+
 
 2. Additional Engineered Features (Conceptual)
 
+
 Parse blood_pressure into:
+
 
 systolic_bp
 
+
 diastolic_bp
+
 
 Encode all categorical variables as numeric (e.g., one-hot encoding for discharge_destination).
 
+
 Explore interactions (e.g., age × length_of_stay, bmi × diabetes).
+
 
 These engineered features improve model capacity to capture non-linear and interaction effects important in clinical risk.
 
-Modeling Pipeline
+## Modeling Pipeline
 
 The modeling pipeline is implemented in the notebook and includes:
 
 Train–Test Split
 
+
 80% training, 20% test
+
 
 Stratified by readmitted to preserve class distribution
 
 Scaling
 
+
 StandardScaler applied to numeric features before modeling.
+
 
 Class Imbalance Handling
 
+
 SMOTE applied on the training data to oversample the minority class (readmitted = 1).
+
 
 The test set remains untouched to represent real-world prevalence.
 
-Models Evaluated
+## Models Evaluated
 
 Decision Tree
 
+
 Random Forest
 
-Gradient Boosting
+
+Gradient
+
 
 AdaBoost
 
+
 XGBoost
+
 
 Evaluation Metrics
 
+
 Accuracy
+
 
 Precision
 
+
 Recall (Sensitivity)
+
 
 F1-score
 
+
 ROC AUC
+
 
 Precision–Recall AUC
 
+
 Hyperparameter Tuning
+
 
 RandomizedSearchCV on Random Forest with parameters such as:
 
+
 n_estimators
+
 
 max_depth
 
+
 min_samples_split
+
 
 min_samples_leaf
 
 max_features
 
+
 The tuned Random Forest is then evaluated and compared to baseline models.
 
-Key Results (Summary)
+
+## Key Results (Summary)
 
 Class imbalance was addressed successfully via SMOTE.
 
+
 Tuned Random Forest and XGBoost perform best on ROC AUC and recall.
+
 
 Top predictors include:
 
+
 medication_count
+
 
 length_of_stay
 
+
 bmi
+
 
 (plus contributions from comorbidities and age)
 
+
 From a clinical standpoint, the model:
 
+
 Prioritizes recall so that most high-risk patients are identified.
+
 
 Provides a data-driven method to flag patients needing closer follow-up after discharge.
 
 Repository Structure
+
+```
 Hospital-Readmission-Prediction/
 │
 ├── data/
@@ -390,6 +462,7 @@ Hospital-Readmission-Prediction/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
+```
 
 Author
 
