@@ -1,170 +1,317 @@
-Predicting 30-Day Hospital Readmissions Using Machine Learning
-Overview
+# Predicting 30-Day Hospital Readmissions Using Machine Learning
 
-This project predicts 30-day hospital readmissions using a structured dataset of 30,000 simulated inpatient encounters.
-It demonstrates a complete, reproducible data science workflow — from cleaning and EDA to feature engineering and model tuning.
+## Overview
 
-The project supports healthcare systems in identifying high-risk patients at discharge to reduce avoidable readmissions and improve patient outcomes.
+This project predicts **30-day hospital readmissions** using a structured dataset of **30,000 simulated inpatient encounters**. It implements a complete, reproducible data science workflow:
 
-Clinical aim: Estimate 30-day readmission risk at discharge to support early intervention, medication reconciliation, and care coordination.
+- Data loading and validation
+- Exploratory data analysis (EDA)
+- Feature engineering (including a clinical complexity score)
+- Model training, class imbalance handling, and hyperparameter tuning
+- Model evaluation and interpretation
 
-Research question:
-Which patient and clinical characteristics best predict 30-day readmission, and how can predictive modeling improve post-discharge care?
+The goal is to help healthcare systems **identify high-risk patients at discharge**, support value-based care, and reduce avoidable readmissions.
 
-Repository Links
+- **Clinical aim:** Estimate 30-day readmission risk at discharge to prioritize early follow-up, medication reconciliation, and transitional care.
+- **Research question:** Which patient and clinical characteristics best predict 30-day readmission, and how can predictive modeling support safer and more efficient discharge planning?
 
-📄 Overleaf report: Predicting Readmissions Report
+---
 
-💻 GitHub repo: Hospital-Readmission-Prediction
+## Repository Links
 
-📊 Jupyter notebook: Readmission_Project.ipynb
+- **Overleaf report:**
+  https://www.overleaf.com/read/vbjqbzwcgjjv#6eb481
 
-🧾 Dataset: Dataset_Hospital_readmissions_30k.csv
+- **GitHub repository:**
+  https://github.com/albertokabore/Hospital-Readmission-Prediction
 
-📚 Kaggle source: Hospital Readmission Prediction (Synthetic Dataset)
+- **Jupyter notebook (main analysis):**
+  https://github.com/albertokabore/Hospital-Readmission-Prediction/blob/main/notebooks/Readmission_Project.ipynb
 
-Decision Framing
+- **Dataset (project copy):**
+  https://github.com/albertokabore/Hospital-Readmission-Prediction/blob/main/data/Dataset_Hospital_readmissions_30k.csv
 
-Primary metric: Recall (Sensitivity) – avoid missing high-risk patients.
+- **Original Kaggle source:**
+  https://www.kaggle.com/datasets/siddharth0935/hospital-readmission-predictionsynthetic-dataset
 
-Secondary metrics: Precision, F1-score, Accuracy.
+---
 
-Summary metrics: AUROC, AUPRC – handle class imbalance effectively.
+## Decision Framing
 
-This metric strategy ensures that clinically relevant predictions are prioritized over raw accuracy.
+### Outcome Variable
 
-Outcome variable:
-readmitted_30_days (Yes/No), mapped to numeric target readmitted (1/0).
+- `readmitted_30_days` ∈ {Yes, No}
+- Encoded as numeric target: `readmitted` ∈ {1, 0}
 
-Dataset Description
+### Primary Metric
 
-File: Dataset_Hospital_readmissions_30k.csv
-Size: 30,000 records × 12 features
-Target: readmitted_30_days (binary)
-Missing values: None
-Duplicates: None
-Memory usage: ~10.5 MB
+- **Recall (Sensitivity)** – prioritize not missing high-risk patients.
 
-Data Dictionary
-Column	Description	Type	Example
-patient_id	Unique patient encounter ID	int	1
-age	Patient age (18–90 years)	int	74
-gender	Patient gender	object	Male
-blood_pressure	Blood pressure (systolic/diastolic)	object	130/72
-cholesterol	Serum cholesterol (mg/dL)	int	240
-bmi	Body mass index	float	31.5
-diabetes	Diabetes flag	object	Yes
-hypertension	Hypertension flag	object	No
-medication_count	Medications prescribed	int	5
-length_of_stay	Hospital stay duration (days)	int	3
-discharge_destination	Discharge destination	object	Home
-readmitted_30_days	Readmission within 30 days	object	No
+### Secondary Metrics
 
-Readmission rate: 12.25%
-Imbalance ratio: ~7.2 : 1 (No : Yes)
+- Precision
+- F1-score
+- Accuracy
 
-Environment Setup
-# Clone the repository
+### Summary Metrics
+
+- ROC AUC (AUROC)
+- Precision–Recall AUC (AUPRC), due to class imbalance
+
+This metric strategy reflects a clinical perspective: it is generally safer to **flag more potential high-risk patients (higher recall)** and then manage resource use using precision and decision thresholds.
+
+---
+
+## Dataset Description
+
+- **File:** `Dataset_Hospital_readmissions_30k.csv`
+- **Size:** 30,000 rows × 12 columns
+- **Target:** `readmitted_30_days` (Yes/No)
+- **Missing values:** 0 in all columns (no imputation required)
+- **Duplicates:** 0 duplicate rows detected
+
+### Data Dictionary
+
+| Column                 | Description                                          | Type   | Example  |
+|------------------------|------------------------------------------------------|--------|----------|
+| `patient_id`           | Unique identifier for each encounter                 | int    | 1        |
+| `age`                  | Age in years (adult patients)                        | int    | 74       |
+| `gender`               | Gender identity                                      | object | Male     |
+| `blood_pressure`       | Blood pressure (systolic/diastolic)                  | object | 130/72   |
+| `cholesterol`          | Serum cholesterol (mg/dL)                            | int    | 240      |
+| `bmi`                  | Body mass index                                      | float  | 31.5     |
+| `diabetes`             | Diabetes diagnosis flag (Yes/No)                     | object | Yes      |
+| `hypertension`         | Hypertension diagnosis flag (Yes/No)                 | object | No       |
+| `medication_count`     | Number of medications prescribed                     | int    | 5        |
+| `length_of_stay`       | Length of index hospital stay (days)                 | int    | 3        |
+| `discharge_destination`| Discharge location (Home, Nursing facility, etc.)    | object | Home     |
+| `readmitted_30_days`   | Readmission within 30 days (Yes/No)                  | object | No       |
+
+- **Readmission rate:** ~12.25% (approx. 3,675 of 30,000 encounters)
+- **Class imbalance:** ~7:1 (No readmission : Yes readmission)
+
+---
+
+## Environment Setup
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/albertokabore/Hospital-Readmission-Prediction
 cd Hospital-Readmission-Prediction
 
-# Create and activate virtual environment
+2. Create and activate virtual environment
 py -m venv .venv
-.venv\Scripts\activate      # Windows
-# source .venv/bin/activate  # macOS/Linux
 
-# Install dependencies
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux (if desired)
+# source .venv/bin/activate
+
+3. Install dependencies
 py -m pip install --upgrade pip
 py -m pip install jupyterlab pandas matplotlib seaborn scikit-learn imbalanced-learn xgboost pyarrow
 
-# Save environment
+4. Save environment
 py -m pip freeze > requirements.txt
 
-
-Recommended .gitignore entries:
-
+5. Recommended .gitignore
 .venv/
 __pycache__/
 .ipynb_checkpoints/
 *.csv
 *.log
 
+Tools and Libraries
+
+Python, Jupyter Notebook, VS Code
+
+pandas – data manipulation
+
+numpy – numerical computing
+
+matplotlib, seaborn – visualization and EDA
+
+scikit-learn – modeling, metrics, preprocessing
+
+imbalanced-learn – SMOTE for class imbalance
+
+xgboost – gradient boosting model
+
 Data Cleaning and Curation
 
-Standardized column names and checked data types.
+The dataset is relatively clean and synthetic, so the cleaning steps focused on validation and light curation rather than heavy correction.
 
-Removed 0 duplicate rows.
+Main Steps
 
-Confirmed no missing values (0%).
+Column standardization
 
-Encoded the target variable:
+Trimmed column names (removed leading/trailing spaces).
+
+Duplicate check
+
+df.duplicated().sum() returned 0.
+
+No rows dropped.
+
+Missing data check
+
+df.isnull().sum() revealed no missing values in any column.
+
+Confirmed: Dataset has no missing values. No imputation required.
+
+Target encoding
+
+Created numeric target for modeling:
 
 df["readmitted"] = df["readmitted_30_days"].map({"Yes": 1, "No": 0})
 
 
-Reviewed descriptive statistics for both numeric and categorical data.
+readmitted becomes the dependent variable for supervised learning.
 
-✅ Clean, validated dataset ready for EDA and modeling.
+Type validation
+
+Numeric features:
+age, cholesterol, bmi, medication_count, length_of_stay, readmitted
+
+Categorical features:
+gender, blood_pressure, diabetes, hypertension, discharge_destination, readmitted_30_days
+
+The data curation step confirms that the dataset is consistent, complete, and ready for EDA, feature engineering, and modeling without the need for imputation.
 
 Exploratory Data Analysis (EDA)
 
-EDA was conducted in Jupyter using pandas, matplotlib, and seaborn.
+EDA is performed in:
+notebooks/Readmission_Project.ipynb
 
-Numeric distributions
+Key tools: histograms, boxplots, correlation heatmaps, categorical count plots.
 
-Age and cholesterol are right-skewed.
+Numeric Features
 
-Longer hospital stays and higher BMI increase readmission risk.
+Key numeric variables:
 
-Categorical distributions
+age
 
-69% of patients discharged home; 27% to nursing facilities.
+cholesterol
 
-Gender is roughly balanced across the dataset.
+bmi
 
-Correlations
+medication_count
 
-Weak but meaningful relationships found between medication_count, length_of_stay, and readmission.
+length_of_stay
 
-Target distribution
+readmitted (target)
 
-12.25% readmitted vs 87.75% not readmitted — confirming class imbalance.
+Insights:
 
-SMOTE was applied later during training to balance the classes.
+Age and cholesterol show mild right skew.
+
+BMI clusters around the overweight/obese range in many patients.
+
+Length of stay is typically short (3–8 days), but longer stays are more common in readmitted patients.
+
+Medication count tends to be higher for those later readmitted.
+
+Categorical Features
+
+diabetes and hypertension show substantial prevalence, consistent with chronic disease populations.
+
+discharge_destination is dominated by Home, followed by Nursing facility.
+
+gender shows a roughly balanced distribution across the sample.
+
+Target Distribution
+
+Overall readmission rate is low (~12.25%), confirming class imbalance.
+
+This motivates:
+
+Use of SMOTE (Synthetic Minority Oversampling Technique) on the training data.
+
+Emphasis on recall and PR AUC in evaluation.
 
 Feature Engineering
 
-Clinical Complexity Score
-A composite quantitative indicator combining:
-age, blood_pressure, cholesterol, bmi, diabetes, hypertension, medication_count, and length_of_stay.
+Feature engineering focuses on encoding clinical burden and improving signal for machine learning models.
 
-Steps:
+1. Clinical Complexity Score
 
-Standardize numeric indicators (z-score).
+A clinical_complexity_score is defined to summarize multiple quantitative indicators of patient burden. It combines:
 
-Encode comorbidities (Yes = 1, No = 0).
+age
 
-Normalize scores to 0–100.
+cholesterol
 
-Categorize as Low, Medium, High, or Very High complexity.
+bmi
 
-Other engineered features:
+medication_count
 
-Binary encoding for categorical variables.
+length_of_stay
 
-Parsing blood_pressure into systolic/diastolic columns.
+Encoded comorbidities: diabetes (Yes/No), hypertension (Yes/No)
 
-Added interaction terms for multivariate risk detection.
+Core steps (high-level):
+
+Convert comorbidity flags (diabetes, hypertension) to 0/1.
+
+Standardize all numeric burden indicators (z-scores).
+
+Aggregate them (e.g., weighted or equal-weight sum).
+
+Rescale the result to a 0–100 range.
+
+Create categorical bands:
+
+Low complexity
+
+Medium complexity
+
+High complexity
+
+Very High complexity
+
+This score is used both:
+
+As a numeric predictor: clinical_complexity_score, and
+
+As a clinical segment variable: complexity_category to compare readmission rates across burden strata.
+
+2. Additional Engineered Features (Conceptual)
+
+Parse blood_pressure into:
+
+systolic_bp
+
+diastolic_bp
+
+Encode all categorical variables as numeric (e.g., one-hot encoding for discharge_destination).
+
+Explore interactions (e.g., age × length_of_stay, bmi × diabetes).
+
+These engineered features improve model capacity to capture non-linear and interaction effects important in clinical risk.
 
 Modeling Pipeline
 
-Train-test split: 80/20 stratified.
+The modeling pipeline is implemented in the notebook and includes:
 
-Scaling: StandardScaler applied to numeric features.
+Train–Test Split
 
-Balancing: SMOTE used to handle class imbalance.
+80% training, 20% test
 
-Models tested:
+Stratified by readmitted to preserve class distribution
+
+Scaling
+
+StandardScaler applied to numeric features before modeling.
+
+Class Imbalance Handling
+
+SMOTE applied on the training data to oversample the minority class (readmitted = 1).
+
+The test set remains untouched to represent real-world prevalence.
+
+Models Evaluated
 
 Decision Tree
 
@@ -176,21 +323,57 @@ AdaBoost
 
 XGBoost
 
-Evaluation metrics:
-Accuracy, Precision, Recall, F1-score, ROC AUC, PR AUC
+Evaluation Metrics
 
-Tuning:
-RandomizedSearchCV optimized Random Forest hyperparameters for better recall and interpretability.
+Accuracy
 
-Key Results
+Precision
 
-Dataset successfully balanced after SMOTE.
+Recall (Sensitivity)
 
-Tuned Random Forest achieved the highest recall and robust ROC AUC.
+F1-score
 
-Top predictors: medication_count, length_of_stay, bmi.
+ROC AUC
 
-Model shows strong potential for clinical decision support in real-world discharge planning.
+Precision–Recall AUC
+
+Hyperparameter Tuning
+
+RandomizedSearchCV on Random Forest with parameters such as:
+
+n_estimators
+
+max_depth
+
+min_samples_split
+
+min_samples_leaf
+
+max_features
+
+The tuned Random Forest is then evaluated and compared to baseline models.
+
+Key Results (Summary)
+
+Class imbalance was addressed successfully via SMOTE.
+
+Tuned Random Forest and XGBoost perform best on ROC AUC and recall.
+
+Top predictors include:
+
+medication_count
+
+length_of_stay
+
+bmi
+
+(plus contributions from comorbidities and age)
+
+From a clinical standpoint, the model:
+
+Prioritizes recall so that most high-risk patients are identified.
+
+Provides a data-driven method to flag patients needing closer follow-up after discharge.
 
 Repository Structure
 Hospital-Readmission-Prediction/
@@ -202,9 +385,12 @@ Hospital-Readmission-Prediction/
 │   └── Readmission_Project.ipynb
 │
 ├── reports/
-│   └── Overleaf_Report.pdf
+│   └── Overleaf_Report.pdf   # PDF exported from Overleaf LaTeX report
 │
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 
+Author
+
+Albert Kabore, MSN, MA, RN
