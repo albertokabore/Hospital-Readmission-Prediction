@@ -1,7 +1,8 @@
 # Predicting Thirty Day Hospital Readmissions Using Machine Learning
 
-Author: Albert Kabore
-Date: November 2025
+### Author: Albert Kabore
+
+#### Date: November 2025
 
 ## Project Overview
 
