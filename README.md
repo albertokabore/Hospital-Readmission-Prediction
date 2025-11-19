@@ -1,35 +1,70 @@
-# Predicting 30-Day Hospital Readmissions Using Machine Learning
+# Predicting Thirty Day Hospital Readmissions Using Machine Learning
 
-## Overview
+Author: Albert Kabore
+Date: November 2025
 
-This project predicts **30-day hospital readmissions** using a structured dataset of **30,000 simulated inpatient encounters**. It implements a complete, reproducible data science workflow:
+## Project Overview
 
-- Data loading and validation
-- Exploratory data analysis (EDA)
-- Feature engineering (including a clinical complexity score)
-- Model training, class imbalance handling, and hyperparameter tuning
-- Model evaluation and interpretation
+This project builds and evaluates a supervised machine learning pipeline to predict thirty day hospital readmissions using a 30,000 row synthetic clinical dataset. The goal is to estimate readmission risk at discharge so that care teams can prioritize proactive outreach, such as early clinic visits, medication reconciliation, and home health referrals.
 
-The goal is to help healthcare systems **identify high-risk patients at discharge**, support value-based care, and reduce avoidable readmissions.
+The work is implemented in Python using pandas, NumPy, scikit-learn, imbalanced-learn, XGBoost, matplotlib, and seaborn.
 
-- **Clinical aim:** Estimate 30-day readmission risk at discharge to prioritize early follow-up, medication reconciliation, and transitional care.
-- **Research question:** Which patient and clinical characteristics best predict 30-day readmission, and how can predictive modeling support safer and more efficient discharge planning?
+## Data
 
----
+The main dataset is stored in
 
-## Repository Links
+- `data/Dataset_Hospital_readmissions_30k.csv`
 
-- **Overleaf report:**
-  https://www.overleaf.com/read/vbjqbzwcgjjv#6eb481
+The original source is the Hospital Readmission Prediction synthetic dataset on Kaggle.
 
-- **GitHub repository:**
-  https://github.com/albertokabore/Hospital-Readmission-Prediction
+## Methods
 
+The analysis follows a reproducible pipeline:
 
-- **Original Kaggle source:**
-  https://www.kaggle.com/datasets/siddharth0935/hospital-readmission-predictionsynthetic-dataset
+1. Data loading, validation, and completeness checks
+2. Exploratory data analysis (EDA) of numeric and categorical features
+3. Advanced feature engineering, including a clinical complexity score, log and square root transforms, and utilization intensity
+4. Train test splitting, scaling, and class imbalance handling with SMOTE
+5. Training and evaluation of several classifiers
+6. Hyperparameter tuning for a Random Forest model
+7. Feature importance analysis and interpretation
 
----
+The main notebook is:
+
+- [`notebooks/Readmission_Project.ipynb`](notebooks/Readmission_Project.ipynb)
+
+## Key Results
+
+- The target class exhibits a 7.17 to 1 imbalance, with a baseline majority class accuracy of 87.75 percent.
+- Multiple ensemble models achieved high overall accuracy but low recall for the readmitted class, with ROC AUC values between 0.49 and 0.52 on the held out test set.
+- A tuned Random Forest model achieved a cross validated ROC AUC of 0.967 on the SMOTE resampled training data, but only 0.514 on the original test set, indicating overfitting.
+- Feature importance analysis showed that length of stay, medication burden, and the engineered clinical complexity score contribute most strongly to predicted risk.
+
+## Report
+
+The full LaTeX report for this project is available on Overleaf:
+
+- [Project report on Overleaf](https://www.overleaf.com/read/vbjqbzwcgjjv#6eb481)
+
+The report includes the abstract, introduction, methods, results, limitations, conclusions, and references.
+
+## Reproducibility
+
+To reproduce the analysis:
+
+1. Clone this repository.
+2. Create and activate a virtual environment.
+3. Install the dependencies listed in `requirements.txt`.
+4. Open `notebooks/Readmission_Project.ipynb` in Jupyter Lab or VS Code.
+5. Execute the notebook cells in order.
+
+## References
+
+Key references include
+
+- CMS Hospital Readmissions Reduction Program
+- AHRQ resources on hospital readmissions
+- Scikit learn, SMOTE, and XGBoost papers
 
 ## Decision Framing
 
