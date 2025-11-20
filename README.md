@@ -1,4 +1,5 @@
-# Predicting Thirty Day Hospital Readmissions Using Machine Learning
+# CAPSTONE PROJECT
+Predicting Thirty Day Hospital Readmissions Using Machine Learning
 
 ### Author: Albert Kabore
 
